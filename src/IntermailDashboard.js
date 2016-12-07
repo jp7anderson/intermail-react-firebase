@@ -52,7 +52,6 @@ class IntermailDashboard extends Component {
     createRecord(record) {
         delete record.firebaseKey;
         record.id = uuid.v4();
-        record.ordem = count +1;
         var records = this.state.records.concat(record);
         fireRef.push(record);
 
