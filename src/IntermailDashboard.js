@@ -50,9 +50,10 @@ class IntermailDashboard extends Component {
     }
 
     createRecord(record) {
-        delete record.firebaseKey;
         record.id = uuid.v4();
+        delete record.firebaseKey;
         var records = this.state.records.concat(record);
+
         fireRef.push(record);
 
         this.setState({
@@ -80,7 +81,11 @@ class IntermailDashboard extends Component {
     }
 
     deleteRecord(recordId) {
+        var records = this.state.records.filter(t => t.firebaseKey !== recordId);
         fireRef.child(recordId).remove();
+        this.setState({
+            records: records
+        });
     }
 
     changeItemPosition(items) {
