@@ -14,6 +14,9 @@ class EditableRecordsList extends Component {
     }
     handleUpdateState(obj) {
         this.setState(obj);
+        if (obj.items) {
+            this.props.onChangeItemPosition(obj.items);
+        }
     }
     render() {
         const records = this.props.records.map((record, i) => (
@@ -26,7 +29,7 @@ class EditableRecordsList extends Component {
                 outline="list"
             >
                 <EditableRecord
-                    key={record.id}
+                    firebaseKey={record.firebaseKey}
                     id={record.id}
                     title={record.title}
                     text={record.text}

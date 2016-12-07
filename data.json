@@ -1,0 +1,19 @@
+{
+   "records":[
+      {
+         "id":1,
+         "title":"Mow the lawn",
+         "text":"House Chores"
+      },
+      {
+         "id":2,
+         "title":"Clear paper jam",
+         "text":"Office Chores"
+      },
+      {
+         "id":3,
+         "title":"Ponder origins of universe 2",
+         "text":"Life Chores"
+      }
+   ]
+}

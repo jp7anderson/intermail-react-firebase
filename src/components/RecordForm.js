@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 class RecordForm extends Component {
     handleSubmit() {
         this.props.onFormSubmit({
+            firebaseKey: this.props.firebaseKey,
             id: this.props.id,
             title: this.refs.title.value,
             text: this.refs.text.value,

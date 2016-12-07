@@ -1,30 +1,36 @@
 import React, { Component } from 'react';
 import uuid from 'uuid';
+import _ from 'lodash';
 import EditableRecordsList from './components/EditableRecordsList';
 import ToggleableRecordForm from './components/ToggleableRecordForm';
+import firebaseApp from './firebase_connection';
+
+const fireRef = firebaseApp.database().ref('records');
 
 class IntermailDashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            records: [
-                {
-                    "id": 1,
-                    "title": "Mow the lawn",
-                    "text": "House Chores",
-                },
-                {
-                    "id": 2,
-                    "title": "Clear paper jam",
-                    "text": "Office Chores"
-                },
-                {
-                    "id": 3,
-                    "title": "Ponder origins of universe 2",
-                    "text": "Life Chores"
+            records: []
+        }
+    }
+
+    componentWillMount() {
+        var items = [];
+        var that = this;
+        fireRef.orderByChild('ordem').on('value', (snap) => {
+            snap.forEach((child) => {
+                var record = {
+                    firebaseKey: child.key,
+                    id: child.val().id,
+                    ordem: child.val().ordem,
+                    title: child.val().title,
+                    text: child.val().text
                 }
-            ],
-        };
+                items.push(record);
+                that.setState({records: items});
+            });
+        });
     }
 
     handleCreateFormSubmit(record) {
@@ -39,10 +45,19 @@ class IntermailDashboard extends Component {
         this.deleteRecord(recordId);
     }
 
+    handleChangeItemPosition(items) {
+        this.changeItemPosition(items);
+    }
+
     createRecord(record) {
+        delete record.firebaseKey;
         record.id = uuid.v4();
+        record.ordem = count +1;
+        var records = this.state.records.concat(record);
+        fireRef.push(record);
+
         this.setState({
-           records: this.state.records.concat(record)
+            records: records
         });
     }
 
@@ -50,9 +65,13 @@ class IntermailDashboard extends Component {
         this.setState({
             records: this.state.records.map((record) => {
                 if (record.id === attrs.id) {
+                    fireRef.child(attrs.firebaseKey).update({
+                        title: attrs.title,
+                        text: attrs.text
+                    });
                     return Object.assign({}, record, {
                         title: attrs.title,
-                        project: attrs.project
+                        text: attrs.text
                     });
                 } else {
                     return record;
@@ -62,8 +81,22 @@ class IntermailDashboard extends Component {
     }
 
     deleteRecord(recordId) {
+        fireRef.child(recordId).remove();
+    }
+
+    changeItemPosition(items) {
         this.setState({
-            records: this.state.records.filter(t => t.id !== recordId),
+            records: this.state.records.map((record, key) => {
+                var item = items.find(function (obj) {
+                    return obj.id === record.id;
+                });
+                fireRef.child(item.firebaseKey).update({
+                    ordem: key + 1
+                });
+                return Object.assign({}, record, {
+                    ordem: key + 1
+                });
+            })
         });
     }
 
@@ -75,6 +108,7 @@ class IntermailDashboard extends Component {
                         records={this.state.records}
                         onFormSubmit={this.handleEditFormSubmit.bind(this)}
                         onTrashClick={this.handleTrashClick.bind(this)}
+                        onChangeItemPosition={this.handleChangeItemPosition.bind(this)}
                     />
                     <ToggleableRecordForm
                         onFormSubmit={this.handleCreateFormSubmit.bind(this)}

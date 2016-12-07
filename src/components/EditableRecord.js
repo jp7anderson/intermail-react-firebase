@@ -35,7 +35,7 @@ class EditableRecord extends Component {
         if (this.state.editFormOpen) {
             return (
                 <RecordForm
-                    key={this.props.id}
+                    firebaseKey={this.props.firebaseKey}
                     id={this.props.id}
                     title={this.props.title}
                     text={this.props.text}
@@ -46,6 +46,7 @@ class EditableRecord extends Component {
         } else {
             return (
                 <Record
+                    firebaseKey={this.props.firebaseKey}
                     id={this.props.id}
                     title={this.props.title}
                     text={this.props.text}

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class Record extends Component {
     handleTrashClick() {
-        this.props.onTrashClick(this.props.id);
+        this.props.onTrashClick(this.props.firebaseKey);
     }
     render() {
         return (
