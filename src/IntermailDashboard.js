@@ -65,6 +65,18 @@ class IntermailDashboard extends Component {
     }
 
     deleteRecord(recordId) {
+        this.setState({
+            records: this.state.records.map((record, key) => {
+                if (record.firebaseKey !== recordId) {
+                    fireRef.child(record.firebaseKey).update({
+                        ordem: key === 0 ? key +1 : key
+                    });
+                    return Object.assign({}, record, {
+                        ordem: key
+                    });
+                }
+            })
+        });
         fireRef.child(recordId).remove();
     }
 
