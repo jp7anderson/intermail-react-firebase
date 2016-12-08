@@ -11,14 +11,14 @@ class IntermailDashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            countItens: 0,
             records: []
         }
     }
 
     componentWillMount() {
-        var items = [];
-        var that = this;
         fireRef.orderByChild('ordem').on('value', (snap) => {
+            var items = [];
             snap.forEach((child) => {
                 var record = {
                     firebaseKey: child.key,
@@ -28,9 +28,11 @@ class IntermailDashboard extends Component {
                     text: child.val().text
                 }
                 items.push(record);
-                that.setState({records: items});
+                this.setState({records: items});
             });
-        });
+
+            this.setState({countItens: items.length});
+        }).bind(this);
     }
 
     handleCreateFormSubmit(record) {
@@ -52,40 +54,18 @@ class IntermailDashboard extends Component {
     createRecord(record) {
         record.id = uuid.v4();
         delete record.firebaseKey;
-        var records = this.state.records.concat(record);
-
         fireRef.push(record);
-
-        this.setState({
-            records: records
-        });
     }
 
     updateRecord(attrs) {
-        this.setState({
-            records: this.state.records.map((record) => {
-                if (record.id === attrs.id) {
-                    fireRef.child(attrs.firebaseKey).update({
-                        title: attrs.title,
-                        text: attrs.text
-                    });
-                    return Object.assign({}, record, {
-                        title: attrs.title,
-                        text: attrs.text
-                    });
-                } else {
-                    return record;
-                }
-            })
+        fireRef.child(attrs.firebaseKey).update({
+            title: attrs.title,
+            text: attrs.text
         });
     }
 
     deleteRecord(recordId) {
-        var records = this.state.records.filter(t => t.firebaseKey !== recordId);
         fireRef.child(recordId).remove();
-        this.setState({
-            records: records
-        });
     }
 
     changeItemPosition(items) {
@@ -115,6 +95,7 @@ class IntermailDashboard extends Component {
                         onChangeItemPosition={this.handleChangeItemPosition.bind(this)}
                     />
                     <ToggleableRecordForm
+                        countItens={this.state.countItens}
                         onFormSubmit={this.handleCreateFormSubmit.bind(this)}
                     />
                 </div>

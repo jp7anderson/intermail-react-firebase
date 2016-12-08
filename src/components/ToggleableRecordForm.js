@@ -30,6 +30,7 @@ class ToggleableRecordForm extends Component {
         if (this.state.isOpen) {
             return (
                 <RecordForm
+                    countItens={this.props.countItens}
                     onFormSubmit={this.handleFormSubmit.bind(this)}
                     onFormClose={this.handleFormClose.bind(this)}
                 />
