@@ -1,5 +1,6 @@
 Intermail com sortable
 
+```bash
 npm install
 gulp
-npm start
+npm start```
